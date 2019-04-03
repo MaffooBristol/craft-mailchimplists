@@ -46,6 +46,17 @@ class CreateController extends Controller
 
         if ($response['success'] and $response['statusCode'] === 200) {
           Craft::$app->getSession()->setNotice('List created.');
+          $listId = $response['body']['id'];
+
+          for ($i = 1; $i <= 5; $i++) {
+            $response = HttpService::request('POST', 'lists/' . $listId . '/merge-fields', [
+              'name' => 'Permission ' . $i,
+              'type' => 'text',
+              'public' => TRUE,
+              'tag' => 'PERM' . $i,
+            ]);
+          }
+
           return $this->redirectToPostedUrl();
         } elseif ($response['success'] and $response['statusCode'] !== 200) {
           Craft::$app->session->setFlash('errorBody', $response['body']);
